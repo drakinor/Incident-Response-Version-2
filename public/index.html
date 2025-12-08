@@ -21,33 +21,23 @@
             <div id="welcome-screen" class="card shadow-lg">
                 <div class="card-body p-5">
                     <h2 class="card-title mb-4">Welcome, Facilitator!</h2>
-                    <p class="mb-4">This tool generates realistic incident response scenarios for tabletop exercises.</p>
+                    <p class="mb-4">This tool generates realistic incident response scenarios for tabletop exercises using procedural generation - no API key required!</p>
                     
                     <div class="mb-4">
-                        <label for="api-key" class="form-label">Google Gemini API Key:</label>
-                        <div class="input-group">
-                            <input 
-                                type="password" 
-                                id="api-key" 
-                                class="form-control" 
-                                placeholder="Enter your Gemini API key (stored locally in browser)">
-                            <button class="btn btn-outline-secondary" type="button" id="toggle-api-key">
-                                👁️
-                            </button>
-                        </div>
-                        <small class="form-text text-muted">
-                            Get a free API key at <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>. 
-                            Your key is stored securely in your browser only.
-                        </small>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="scenario-prompt" class="form-label">Scenario Prompt (optional):</label>
+                        <label for="scenario-prompt" class="form-label">Scenario Type (optional):</label>
+                        <select id="scenario-type" class="form-select mb-3">
+                            <option value="">Random Scenario</option>
+                            <option value="ransomware">Ransomware Attack</option>
+                            <option value="phishing">Phishing Campaign</option>
+                            <option value="data breach">Data Breach</option>
+                            <option value="insider">Insider Threat</option>
+                            <option value="ddos">DDoS Attack</option>
+                        </select>
                         <textarea 
                             id="scenario-prompt" 
                             class="form-control" 
-                            rows="3" 
-                            placeholder="e.g., A ransomware attack on a K-12 school district, or leave blank for a default scenario"></textarea>
+                            rows="2" 
+                            placeholder="Or describe a custom scenario (e.g., 'ransomware attack targeting financial systems')"></textarea>
                     </div>
 
                     <button id="start-btn" class="btn btn-primary btn-lg">Start Exercise</button>

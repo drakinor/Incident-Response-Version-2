@@ -14,43 +14,17 @@ const scenarioScreen = document.getElementById('scenario-screen');
 const debriefScreen = document.getElementById('debrief-screen');
 const startBtn = document.getElementById('start-btn');
 const loading = document.getElementById('loading');
+const scenarioType = document.getElementById('scenario-type');
 const scenarioPrompt = document.getElementById('scenario-prompt');
-const apiKeyInput = document.getElementById('api-key');
-const toggleApiKeyBtn = document.getElementById('toggle-api-key');
-
-// Load saved API key from localStorage
-window.addEventListener('DOMContentLoaded', () => {
-    const savedApiKey = localStorage.getItem('gemini_api_key');
-    if (savedApiKey) {
-        apiKeyInput.value = savedApiKey;
-    }
-});
-
-// Toggle API key visibility
-toggleApiKeyBtn.addEventListener('click', () => {
-    if (apiKeyInput.type === 'password') {
-        apiKeyInput.type = 'text';
-        toggleApiKeyBtn.textContent = '🔒';
-    } else {
-        apiKeyInput.type = 'password';
-        toggleApiKeyBtn.textContent = '👁️';
-    }
-});
 
 // Start new exercise
 startBtn.addEventListener('click', async () => {
-    const prompt = scenarioPrompt.value.trim();
-    const apiKey = apiKeyInput.value.trim();
+    let prompt = scenarioPrompt.value.trim();
     
-    // Validate API key
-    if (!apiKey) {
-        alert('Please enter your Google Gemini API key. Get one free at: https://aistudio.google.com/app/apikey');
-        apiKeyInput.focus();
-        return;
+    // If they selected a type from dropdown, use that
+    if (!prompt && scenarioType.value) {
+        prompt = scenarioType.value;
     }
-    
-    // Save API key to localStorage
-    localStorage.setItem('gemini_api_key', apiKey);
     
     loading.classList.remove('d-none');
     startBtn.disabled = true;
@@ -59,7 +33,7 @@ startBtn.addEventListener('click', async () => {
         const response = await fetch('/api/scenario/new', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, prompt, apiKey })
+            body: JSON.stringify({ sessionId, prompt })
         });
 
         const data = await response.json();

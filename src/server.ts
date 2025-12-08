@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
-import { generateScenario, evaluateChoice, generateDebrief } from './llm';
+import { generateScenario, evaluateChoice, generateDebrief } from './procedural-generator';
 
 dotenv.config();
 
@@ -18,7 +18,6 @@ interface Session {
   currentStage: number;
   score: number;
   history: any[];
-  apiKey: string; // Store API key per session
 }
 
 const sessions = new Map<string, Session>();
@@ -30,26 +29,21 @@ app.get('/', (req: Request, res: Response) => {
 
 app.post('/api/scenario/new', async (req: Request, res: Response) => {
   try {
-    const { sessionId, prompt, apiKey } = req.body;
+    const { sessionId, prompt } = req.body;
     
-    console.log('Received request:', { sessionId, hasApiKey: !!apiKey, promptLength: prompt?.length || 0 });
+    console.log('Received request:', { sessionId, promptLength: prompt?.length || 0 });
     
     if (!sessionId) {
       return res.status(400).json({ error: 'Session ID required' });
     }
 
-    if (!apiKey) {
-      return res.status(400).json({ error: 'API key required. Please enter your Gemini API key in the form.' });
-    }
-
-    const scenario = await generateScenario(prompt, apiKey);
+    const scenario = await generateScenario(prompt);
     
     sessions.set(sessionId, {
       scenario,
       currentStage: 0,
       score: 0,
-      history: [],
-      apiKey
+      history: []
     });
 
     res.json({
@@ -88,8 +82,7 @@ app.post('/api/scenario/choice', async (req: Request, res: Response) => {
       session.scenario,
       session.currentStage,
       choice,
-      session.history,
-      session.apiKey
+      session.history
     );
 
     // Update session
@@ -104,7 +97,7 @@ app.post('/api/scenario/choice', async (req: Request, res: Response) => {
 
     // Check if scenario is complete
     if (session.currentStage >= session.scenario.stages.length) {
-      const debrief = await generateDebrief(session.scenario, session.history, session.score, session.apiKey);
+      const debrief = await generateDebrief(session.scenario, session.history, session.score);
       return res.json({
         success: true,
         complete: true,
