@@ -1,0 +1,86 @@
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+header {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-bottom: 3px solid #ffc107;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+.choice-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.choice-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border-color: #007bff;
+}
+
+.choice-card.selected {
+    border-color: #28a745;
+    background-color: #d4edda;
+}
+
+.choice-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+#loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.progress {
+    height: 25px;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+}
+
+.list-group-item {
+    border-left: 4px solid #007bff;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+}
+
+/* Presentation mode optimizations */
+@media (min-width: 1200px) {
+    .fs-5 {
+        font-size: 1.5rem !important;
+    }
+    
+    .card-body p {
+        line-height: 1.8;
+    }
+}
