@@ -37,7 +37,22 @@ app.post('/api/scenario/new', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Session ID required' });
     }
 
-    const scenario = await generateScenario(prompt);
+    // Validate and sanitize prompt
+    let sanitizedPrompt = '';
+    if (prompt && typeof prompt === 'string') {
+      // Trim and limit length to prevent abuse
+      sanitizedPrompt = prompt.trim().substring(0, 200);
+      
+      // Remove any potentially dangerous characters or HTML
+      sanitizedPrompt = sanitizedPrompt.replace(/[<>{}[\]\\]/g, '');
+      
+      // If nothing useful remains after sanitization, clear it
+      if (sanitizedPrompt.length < 3) {
+        sanitizedPrompt = '';
+      }
+    }
+
+    const scenario = await generateScenario(sanitizedPrompt || undefined);
     
     sessions.set(sessionId, {
       scenario,
@@ -89,7 +104,7 @@ app.post('/api/scenario/choice', async (req: Request, res: Response) => {
     session.score += evaluation.scoreChange;
     session.history.push({
       stage: session.currentStage,
-      choice: choiceIndex,
+      choice: choice,
       choiceText: choice.text,
       evaluation
     });

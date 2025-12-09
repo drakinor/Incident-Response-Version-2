@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incident Response Tabletop Simulator</title>
+    <title>Incident Response Tabletop Simulator - Executive Edition</title>
     <!-- TODO: Add favicon/app icon before finalizing product -->
     <!-- <link rel="icon" type="image/png" href="/favicon.png"> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,41 +12,39 @@
 <body>
     <div class="container-fluid">
         <header class="text-center py-4 bg-dark text-white">
-            <h1>🛡️ Incident Response Tabletop Simulator</h1>
-            <p class="lead">LLM-Powered Training for Security Teams</p>
+            <h1>⚡ INCIDENT RESPONSE TABLETOP SIMULATOR</h1>
+            <p class="lead mb-0">Enterprise Security Training & Assessment Platform</p>
         </header>
 
         <main class="container my-5">
             <!-- Welcome Screen -->
             <div id="welcome-screen" class="card shadow-lg">
                 <div class="card-body p-5">
-                    <h2 class="card-title mb-4">Welcome, Facilitator!</h2>
-                    <p class="mb-4">This tool generates realistic incident response scenarios for tabletop exercises using procedural generation - no API key required!</p>
+                    <h2 class="card-title mb-4">Facilitator Control Panel</h2>
+                    <p class="mb-4">Enterprise-grade incident response simulation platform utilizing procedural scenario generation. No external dependencies required.</p>
                     
                     <div class="mb-4">
-                        <label for="scenario-prompt" class="form-label">Scenario Type (optional):</label>
-                        <select id="scenario-type" class="form-select mb-3">
-                            <option value="">Random Scenario</option>
-                            <option value="ransomware">Ransomware Attack</option>
-                            <option value="phishing">Phishing Campaign</option>
-                            <option value="data breach">Data Breach</option>
-                            <option value="insider">Insider Threat</option>
-                            <option value="ddos">DDoS Attack</option>
+                        <label for="scenario-type" class="form-label fw-bold">Select Threat Scenario:</label>
+                        <select id="scenario-type" class="form-select form-select-lg">
+                            <option value="">🎲 Randomized Threat Vector</option>
+                            <option value="ransomware">🔒 Ransomware Attack</option>
+                            <option value="phishing">🎣 Credential Harvesting (Phishing)</option>
+                            <option value="data breach">💾 Data Exfiltration / Breach</option>
+                            <option value="insider">👤 Insider Threat</option>
+                            <option value="ddos">⚡ DDoS Attack</option>
+                            <option value="bec">💼 Business Email Compromise (BEC)</option>
+                            <option value="malware">🦠 Malware / Spyware Infection</option>
                         </select>
-                        <textarea 
-                            id="scenario-prompt" 
-                            class="form-control" 
-                            rows="2" 
-                            placeholder="Or describe a custom scenario (e.g., 'ransomware attack targeting financial systems')"></textarea>
+                        <small class="text-muted mt-2 d-block">Each scenario generates unique, realistic incident response challenges across 5 phases</small>
                     </div>
 
-                    <button id="start-btn" class="btn btn-primary btn-lg">Start Exercise</button>
+                    <button id="start-btn" class="btn btn-primary btn-lg px-5">INITIATE EXERCISE</button>
                     
                     <div id="loading" class="mt-4 text-center d-none">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        <p class="mt-2">Generating scenario...</p>
+                        <p class="mt-2">Generating threat scenario...</p>
                     </div>
                 </div>
             </div>
@@ -55,15 +53,14 @@
             <div id="scenario-screen" class="d-none">
                 <div class="card shadow-lg mb-4">
                     <div class="card-header bg-primary text-white">
-                        <h3 id="scenario-title" class="mb-0"></h3>
+                        <h3 id="scenario-title" class="mb-0 text-uppercase"></h3>
                     </div>
                     <div class="card-body">
                         <p id="scenario-description" class="lead"></p>
                         <div class="progress mb-3">
                             <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <p class="text-muted">Stage <span id="current-stage">1</span> of <span id="total-stages">4</span></p>
-                        <p class="fw-bold">Score: <span id="current-score">0</span></p>
+                        <p class="text-muted">Phase <span id="current-stage">1</span> of <span id="total-stages">5</span> | Score: <span id="current-score" class="badge badge-primary">0</span></p>
                     </div>
                 </div>
 
@@ -71,7 +68,7 @@
                 <div id="stage-container">
                     <div class="card shadow-lg mb-4">
                         <div class="card-header bg-warning">
-                            <h4 id="stage-title" class="mb-0"></h4>
+                            <h4 id="stage-title" class="mb-0 text-uppercase"></h4>
                         </div>
                         <div class="card-body">
                             <p id="stage-narrative" class="fs-5"></p>
@@ -80,10 +77,10 @@
 
                     <!-- Evaluation Feedback -->
                     <div id="evaluation-feedback" class="alert alert-info d-none mb-4">
-                        <h5>Result:</h5>
-                        <p id="evaluation-text"></p>
-                        <p><strong>Consequence:</strong> <span id="consequence-text"></span></p>
-                        <button id="continue-btn" class="btn btn-primary">Continue to Next Stage</button>
+                        <h5 class="text-uppercase fw-bold">Decision Impact:</h5>
+                        <p id="evaluation-text" class="mb-2"></p>
+                        <p><strong>Operational Consequence:</strong> <span id="consequence-text"></span></p>
+                        <button id="continue-btn" class="btn btn-primary">PROCEED TO NEXT PHASE</button>
                     </div>
 
                     <!-- Choices -->
@@ -96,20 +93,40 @@
             <!-- Debrief Screen -->
             <div id="debrief-screen" class="d-none">
                 <div class="card shadow-lg">
-                    <div class="card-header bg-success text-white">
-                        <h3>Exercise Complete - Debrief</h3>
+                    <div class="card-header text-white">
+                        <h3 class="text-uppercase">EXERCISE COMPLETE - EXECUTIVE DEBRIEF</h3>
                     </div>
                     <div class="card-body">
-                        <h4>Final Score: <span id="final-score" class="badge bg-primary fs-3"></span></h4>
-                        <p id="debrief-summary" class="lead mt-3"></p>
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <h4 class="text-uppercase mb-2">Final Assessment</h4>
+                                <p class="mb-0"><span id="final-score" class="fs-4 fw-bold"></span></p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="d-inline-block">
+                                    <p class="mb-1 text-uppercase small">Performance Grade</p>
+                                    <span id="final-grade" class="badge fs-1 px-4 py-3"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p id="debrief-summary" class="lead mb-4"></p>
 
-                        <h5 class="mt-4">Key Lessons Learned:</h5>
+                        <h5 class="mt-4 text-uppercase fw-bold">Incident Timeline & Decision Analysis:</h5>
+                        <div id="timeline-container" class="mb-4">
+                            <!-- Timeline will be dynamically inserted here -->
+                        </div>
+
+                        <h5 class="mt-4 text-uppercase fw-bold">Your Response Actions:</h5>
+                        <ul id="actions-list" class="list-group mb-4"></ul>
+
+                        <h5 class="mt-4 text-uppercase fw-bold">Key Lessons Learned:</h5>
                         <ul id="lessons-list" class="list-group mb-4"></ul>
 
-                        <h5 class="mt-4">Recommendations:</h5>
+                        <h5 class="mt-4 text-uppercase fw-bold">Strategic Recommendations:</h5>
                         <ul id="recommendations-list" class="list-group mb-4"></ul>
 
-                        <button id="restart-btn" class="btn btn-primary btn-lg">Start New Exercise</button>
+                        <button id="restart-btn" class="btn btn-primary btn-lg px-5">INITIATE NEW EXERCISE</button>
                     </div>
                 </div>
             </div>
