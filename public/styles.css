@@ -252,6 +252,25 @@ header h1 {
     color: var(--text-secondary) !important;
 }
 
+/* Discussion prompts styling for better readability */
+#discussion-prompts {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--primary-blue) !important;
+}
+
+#discussion-prompts .card-body {
+    color: var(--text-primary);
+}
+
+#discussion-prompts strong {
+    color: var(--accent-cyan);
+}
+
+#prompts-list li {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
 /* Remove excessive glow effects */
 .text-glow {
     text-shadow: none;
@@ -345,6 +364,17 @@ header h1 {
         background: #f5f5f5 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+    }
+    
+    #discussion-prompts {
+        background: #f9f9f9 !important;
+        border: 2px solid #333 !important;
+    }
+    
+    #discussion-prompts .card-body,
+    #discussion-prompts strong,
+    #prompts-list li {
+        color: #000 !important;
     }
     
     h5, h4, h3 {

@@ -10,6 +10,13 @@ export interface Stage {
   title: string;
   narrative: string;
   choices: Choice[];
+  decisionMaker?: string; // Role with final authority for this stage
+}
+
+export interface TeamRole {
+  title: string;
+  priority: number;
+  description: string;
 }
 
 export interface Scenario {
@@ -17,6 +24,7 @@ export interface Scenario {
   description: string;
   context: string;
   stages: Stage[];
+  teamRoles?: TeamRole[]; // Assigned roles based on team size
 }
 
 export interface Evaluation {
@@ -125,6 +133,27 @@ const INCIDENT_TYPES = {
       'Lateral movement indicators - malware spreading via shared drives'
     ]
   }
+};
+
+// Incident Response roles by priority
+const IR_ROLES: TeamRole[] = [
+  { title: 'Incident Commander', priority: 1, description: 'Overall incident coordination and strategic decisions' },
+  { title: 'Technical Lead', priority: 2, description: 'Technical analysis and system remediation' },
+  { title: 'Communications Officer', priority: 3, description: 'Stakeholder communications and public relations' },
+  { title: 'Legal Counsel', priority: 4, description: 'Legal compliance and regulatory requirements' },
+  { title: 'Security Analyst', priority: 5, description: 'Threat intelligence and forensic analysis' },
+  { title: 'CFO / Financial Officer', priority: 6, description: 'Financial impact and resource allocation' },
+  { title: 'Operations Manager', priority: 7, description: 'Business continuity and operational impact' },
+  { title: 'HR Director', priority: 8, description: 'Personnel matters and insider threat response' }
+];
+
+// Map stage types to appropriate decision-making roles
+const STAGE_DECISION_MAKERS = {
+  detection: 'Technical Lead',
+  containment: 'Incident Commander',
+  eradication: 'Security Analyst',
+  recovery: 'Operations Manager',
+  postIncident: 'Incident Commander'
 };
 
 // Stage templates for different phases of IR
@@ -274,9 +303,19 @@ const FEEDBACK = {
 };
 
 /**
+ * Assign team roles based on team size
+ */
+function assignTeamRoles(teamSize: number): TeamRole[] {
+  if (teamSize === 1) {
+    return [{ title: 'Solo Practitioner', priority: 1, description: 'All roles and responsibilities' }];
+  }
+  return IR_ROLES.slice(0, teamSize);
+}
+
+/**
  * Generate a procedural scenario
  */
-export async function generateScenario(userPrompt?: string): Promise<Scenario> {
+export async function generateScenario(userPrompt?: string, teamSize: number = 4): Promise<Scenario> {
   // Select incident type (random or based on prompt)
   const incidentTypes = Object.keys(INCIDENT_TYPES);
   let selectedType = incidentTypes[Math.floor(Math.random() * incidentTypes.length)];
@@ -294,6 +333,9 @@ export async function generateScenario(userPrompt?: string): Promise<Scenario> {
   }
   
   const incident = INCIDENT_TYPES[selectedType as keyof typeof INCIDENT_TYPES];
+  
+  // Assign team roles
+  const teamRoles = assignTeamRoles(teamSize);
   
   // Generate 5-8 stages with rich narratives
   const stageTypes = ['detection', 'containment', 'eradication', 'recovery', 'postIncident'];
@@ -392,11 +434,15 @@ export async function generateScenario(userPrompt?: string): Promise<Scenario> {
     // Build narrative with rich context
     const narrative = generateNarrative(selectedType, stageType, i + 1);
     
+    // Assign decision maker for this stage
+    const decisionMaker = STAGE_DECISION_MAKERS[stageType as keyof typeof STAGE_DECISION_MAKERS];
+    
     stages.push({
       stageNumber: i + 1,
       title: template.title,
       narrative,
-      choices
+      choices,
+      decisionMaker
     });
   }
   
@@ -404,7 +450,8 @@ export async function generateScenario(userPrompt?: string): Promise<Scenario> {
     title: incident.title,
     description: incident.description,
     context: incident.context,
-    stages
+    stages,
+    teamRoles
   };
 }
 

@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Incident Response Tabletop Simulator - Executive Edition</title>
-    <!-- TODO: Add favicon/app icon before finalizing product -->
-    <!-- <link rel="icon" type="image/png" href="/favicon.png"> -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛡️%3C/text%3E%3C/svg%3E">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
@@ -39,35 +38,54 @@
                     </div>
 
                     <div class="row mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label for="team-size" class="form-label fw-bold">Team Size:</label>
+                            <select id="team-size" class="form-select">
+                                <option value="1">Solo Practice (1 player)</option>
+                                <option value="2">2 Team Members</option>
+                                <option value="3">3 Team Members</option>
+                                <option value="4" selected>4 Team Members</option>
+                                <option value="5">5 Team Members</option>
+                                <option value="6">6 Team Members</option>
+                                <option value="7">7 Team Members</option>
+                                <option value="8">8 Team Members</option>
+                            </select>
+                            <small class="text-muted d-block">Assigns key IR roles</small>
+                        </div>
+                        <div class="col-md-3">
                             <label for="difficulty-level" class="form-label fw-bold">Difficulty Level:</label>
                             <select id="difficulty-level" class="form-select">
-                                <option value="standard">Standard - Balanced technical and executive decisions</option>
-                                <option value="executive">Executive Focus - Strategic and communication emphasis</option>
-                                <option value="technical">Technical Focus - Detailed technical response decisions</option>
+                                <option value="standard">Standard - Balanced</option>
+                                <option value="executive">Executive Focus</option>
+                                <option value="technical">Technical Focus</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label for="org-context" class="form-label fw-bold">Organization Context:</label>
+                        <div class="col-md-3">
+                            <label for="org-context" class="form-label fw-bold">Organization:</label>
                             <select id="org-context" class="form-select">
                                 <option value="education">K-12 School District</option>
-                                <option value="healthcare">Healthcare / Hospital System</option>
+                                <option value="healthcare">Healthcare / Hospital</option>
                                 <option value="financial">Financial Institution</option>
-                                <option value="manufacturing">Manufacturing / Industrial</option>
+                                <option value="manufacturing">Manufacturing</option>
                                 <option value="retail">Retail / E-commerce</option>
-                                <option value="government">Government / Public Sector</option>
+                                <option value="government">Government</option>
                                 <option value="technology">Technology Company</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="time-pressure" class="form-label fw-bold">Time Pressure:</label>
                             <select id="time-pressure" class="form-select">
-                                <option value="none">None - Untimed practice mode</option>
-                                <option value="realistic">Realistic - 2-3 min per phase</option>
-                                <option value="high">High Stress - 90 sec per phase</option>
+                                <option value="none">None - Untimed</option>
+                                <option value="realistic">Realistic - 2-3 min</option>
+                                <option value="high">High Stress - 90 sec</option>
                             </select>
-                            <small class="text-muted d-block">Adds countdown timer for crisis simulation</small>
+                            <small class="text-muted d-block">Crisis timer</small>
                         </div>
+                    </div>
+
+                    <div id="team-roster" class="mb-4 d-none">
+                        <h5 class="text-cyan mb-3">📋 Team Roster</h5>
+                        <div id="team-roster-list" class="d-flex flex-wrap gap-2"></div>
                     </div>
 
                     <button id="start-btn" class="btn btn-primary btn-lg px-5">INITIATE EXERCISE</button>
@@ -118,7 +136,10 @@
                     <div class="card shadow-lg mb-4">
                         <div class="card-header bg-warning">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h4 id="stage-title" class="mb-0 text-uppercase"></h4>
+                                <div>
+                                    <h4 id="stage-title" class="mb-0 text-uppercase"></h4>
+                                    <div id="decision-maker-badge" class="badge bg-success mt-2 d-none" style="font-size: 0.9rem;"></div>
+                                </div>
                                 <span id="urgency-indicator" class="badge bg-dark"></span>
                             </div>
                         </div>
@@ -180,10 +201,10 @@
                         <ul id="recommendations-list" class="list-group mb-4"></ul>
 
                         <h5 class="mt-4 text-uppercase fw-bold">Facilitator Discussion Prompts:</h5>
-                        <div id="discussion-prompts" class="card bg-light mb-4">
+                        <div id="discussion-prompts" class="card bg-dark border-primary mb-4">
                             <div class="card-body">
-                                <p class="mb-2"><strong>For team debriefing, consider discussing:</strong></p>
-                                <ul id="prompts-list" class="mb-0">
+                                <p class="mb-2 text-white"><strong>For team debriefing, consider discussing:</strong></p>
+                                <ul id="prompts-list" class="mb-0 text-white">
                                     <!-- Prompts will be dynamically inserted -->
                                 </ul>
                             </div>

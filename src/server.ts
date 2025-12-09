@@ -29,9 +29,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.post('/api/scenario/new', async (req: Request, res: Response) => {
   try {
-    const { sessionId, prompt } = req.body;
-    
-    console.log('Received request:', { sessionId, promptLength: prompt?.length || 0 });
+    const { sessionId, prompt, teamSize } = req.body;
     
     if (!sessionId) {
       return res.status(400).json({ error: 'Session ID required' });
@@ -52,7 +50,10 @@ app.post('/api/scenario/new', async (req: Request, res: Response) => {
       }
     }
 
-    const scenario = await generateScenario(sanitizedPrompt || undefined);
+    // Validate team size
+    const validatedTeamSize = teamSize && typeof teamSize === 'number' && teamSize >= 1 && teamSize <= 8 ? teamSize : 4;
+
+    const scenario = await generateScenario(sanitizedPrompt || undefined, validatedTeamSize);
     
     sessions.set(sessionId, {
       scenario,
@@ -66,7 +67,8 @@ app.post('/api/scenario/new', async (req: Request, res: Response) => {
       scenario: {
         title: scenario.title,
         description: scenario.description,
-        totalStages: scenario.stages.length
+        totalStages: scenario.stages.length,
+        teamRoles: scenario.teamRoles
       },
       stage: scenario.stages[0]
     });

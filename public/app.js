@@ -21,12 +21,14 @@ const scenarioType = document.getElementById('scenario-type');
 const difficultyLevel = document.getElementById('difficulty-level');
 const orgContext = document.getElementById('org-context');
 const timePressure = document.getElementById('time-pressure');
+const teamSizeSelect = document.getElementById('team-size');
 
 // Start new exercise
 startBtn.addEventListener('click', async () => {
     const selectedType = scenarioType.value;
     const difficulty = difficultyLevel.value;
     const context = orgContext.value;
+    const teamSize = parseInt(teamSizeSelect.value) || 4;
     timePressureMode = timePressure.value;
     
     loading.classList.remove('d-none');
@@ -40,7 +42,8 @@ startBtn.addEventListener('click', async () => {
                 sessionId, 
                 prompt: selectedType,
                 difficulty: difficulty,
-                orgContext: context
+                orgContext: context,
+                teamSize: teamSize
             })
         });
 
@@ -74,14 +77,48 @@ function displayScenario(scenario, stage) {
     document.getElementById('current-stage').textContent = 1;
     document.getElementById('current-score').textContent = 0;
     
+    // Display team roster
+    displayTeamRoster(scenario.teamRoles);
+    
     updateProgress(1, scenario.totalStages);
     displayStage(stage);
+}
+
+// Display team roles
+function displayTeamRoster(teamRoles) {
+    const teamRosterSection = document.getElementById('team-roster');
+    const teamRosterList = document.getElementById('team-roster-list');
+    
+    if (!teamRoles || teamRoles.length === 0) {
+        teamRosterSection.classList.add('d-none');
+        return;
+    }
+    
+    teamRosterList.innerHTML = '';
+    teamRoles.forEach(role => {
+        const roleCard = document.createElement('div');
+        roleCard.className = 'badge bg-secondary fs-6 p-2';
+        roleCard.innerHTML = `<strong>${role.title}</strong><br><small class="text-muted">${role.description}</small>`;
+        roleCard.style.cssText = 'min-width: 180px; text-align: left; white-space: normal; line-height: 1.4;';
+        teamRosterList.appendChild(roleCard);
+    });
+    
+    teamRosterSection.classList.remove('d-none');
 }
 
 // Display a stage with its choices
 function displayStage(stage) {
     document.getElementById('stage-title').textContent = stage.title;
     document.getElementById('stage-narrative').textContent = stage.narrative;
+    
+    // Display decision maker if available
+    const decisionMakerBadge = document.getElementById('decision-maker-badge');
+    if (stage.decisionMaker) {
+        decisionMakerBadge.textContent = `👤 Decision Maker: ${stage.decisionMaker}`;
+        decisionMakerBadge.classList.remove('d-none');
+    } else {
+        decisionMakerBadge.classList.add('d-none');
+    }
     
     // Set urgency indicator based on stage
     const stageNum = stage.stageNumber;
