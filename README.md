@@ -11,15 +11,49 @@ This Node.js + TypeScript web application generates realistic incident response 
 ### Key Features
 
 - **Procedurally-Generated Scenarios**: Dynamic incident response scenarios using algorithmic templates
-- **5 Incident Types**: Ransomware, Phishing, Data Breach, Insider Threat, DDoS attacks
-- **Multi-Stage Exercises**: 5 escalating stages per scenario (Detection → Containment → Eradication → Recovery → Post-Incident)
+- **7 Incident Types**: Ransomware, Phishing, Data Breach, Insider Threat, DDoS, BEC, Malware/Spyware
+- **Multi-Stage Exercises**: 5-8 escalating stages per scenario (Detection → Containment → Eradication → Recovery → Post-Incident)
 - **Decision-Based Learning**: 3 choices per stage (good/neutral/bad) with randomized presentation
-- **Real-Time Scoring**: Tracks team performance throughout the exercise (+10/0/-10 per stage)
-- **Comprehensive Debrief**: Performance-based lessons learned and recommendations
+- **Real-Time Scoring**: Tracks team performance throughout the exercise (10/7/-5 pts with letter grades A+ to F)
+- **Time Pressure Modes**: Optional countdown timers (realistic 3min or high-stress 90sec per phase)
+- **Interrupt Events**: Stakeholder pressure simulations (CEO, Legal, HR demanding updates)
+- **Comprehensive Debrief**: Timeline analysis, letter grades, lessons learned, and facilitator discussion prompts
 - **Facilitator-Friendly**: Simple interface designed for casting to a TV/projector
+- **Export/Print Reports**: Generate training records for documentation
 - **Offline Ready**: No external dependencies or API calls needed
 
-## Quick Start
+## 🚀 Quick Start (Non-Technical Users)
+
+### ONE-CLICK LAUNCHER
+
+**For the easiest startup, just double-click:**
+```
+START_SIMULATOR.bat
+```
+
+The launcher will automatically:
+- ✓ Check if Node.js is installed
+- ✓ Install dependencies (first time only)
+- ✓ Build the application
+- ✓ Start the server
+- ✓ Open your browser
+
+**See `🚀 START HERE.txt` for detailed non-technical instructions.**
+
+### First Time Setup
+
+1. **Install Node.js** (if not already installed)
+   - Download from: https://nodejs.org/
+   - Install the LTS version with default settings
+   - Restart your computer
+
+2. **Run the launcher**
+   - Double-click `START_SIMULATOR.bat`
+   - Wait for browser to open automatically
+
+3. **Done!** Start training.
+
+## Quick Start (Technical Users)
 
 ### Prerequisites
 
