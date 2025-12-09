@@ -295,3 +295,112 @@ header h1 {
 .card-header {
     animation: subtle-pulse 4s ease-in-out infinite;
 }
+
+/* Print Styles for Export/Report Functionality */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    
+    header, #restart-btn, #print-btn, .btn {
+        display: none !important;
+    }
+    
+    #debrief-screen .card {
+        background: white;
+        border: 2px solid #333;
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+    
+    .card-header {
+        background: #333 !important;
+        color: white !important;
+        border-bottom: 2px solid #333;
+        animation: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .card-body {
+        color: black;
+        padding: 1.5rem;
+    }
+    
+    .badge {
+        border: 2px solid #333;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .list-group-item {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+    
+    .bg-light {
+        background: #f5f5f5 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    h5, h4, h3 {
+        page-break-after: avoid;
+        color: black;
+    }
+    
+    #timeline-container .card {
+        margin-bottom: 1rem;
+        page-break-inside: avoid;
+    }
+}
+
+/* Timer and Urgency Indicators */
+.pulse-timer {
+    animation: pulse-red 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(234, 67, 53, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(234, 67, 53, 0);
+    }
+}
+
+.timer-warning {
+    background-color: #ff9800 !important;
+}
+
+.timer-critical {
+    background-color: #ea4335 !important;
+    animation: pulse-red 0.8s ease-in-out infinite;
+}
+
+/* Interrupt Event Styling */
+#interrupt-event {
+    border-left: 5px solid #ea4335;
+    background: linear-gradient(90deg, rgba(234, 67, 53, 0.15) 0%, rgba(234, 67, 53, 0.05) 100%);
+    animation: slide-in 0.5s ease-out;
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+#urgency-indicator {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+}
+

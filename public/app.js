@@ -2,6 +2,9 @@
 let sessionId = generateSessionId();
 let currentScenario = null;
 let currentStage = null;
+let timerInterval = null;
+let timeRemaining = 0;
+let timePressureMode = 'none';
 
 // Generate a simple session ID
 function generateSessionId() {
@@ -15,10 +18,16 @@ const debriefScreen = document.getElementById('debrief-screen');
 const startBtn = document.getElementById('start-btn');
 const loading = document.getElementById('loading');
 const scenarioType = document.getElementById('scenario-type');
+const difficultyLevel = document.getElementById('difficulty-level');
+const orgContext = document.getElementById('org-context');
+const timePressure = document.getElementById('time-pressure');
 
 // Start new exercise
 startBtn.addEventListener('click', async () => {
     const selectedType = scenarioType.value;
+    const difficulty = difficultyLevel.value;
+    const context = orgContext.value;
+    timePressureMode = timePressure.value;
     
     loading.classList.remove('d-none');
     startBtn.disabled = true;
@@ -27,7 +36,12 @@ startBtn.addEventListener('click', async () => {
         const response = await fetch('/api/scenario/new', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, prompt: selectedType })
+            body: JSON.stringify({ 
+                sessionId, 
+                prompt: selectedType,
+                difficulty: difficulty,
+                orgContext: context
+            })
         });
 
         const data = await response.json();
@@ -69,6 +83,20 @@ function displayStage(stage) {
     document.getElementById('stage-title').textContent = stage.title;
     document.getElementById('stage-narrative').textContent = stage.narrative;
     
+    // Set urgency indicator based on stage
+    const stageNum = stage.stageNumber;
+    const urgencyIndicator = document.getElementById('urgency-indicator');
+    if (stageNum <= 2) {
+        urgencyIndicator.textContent = 'CRITICAL - IMMEDIATE ACTION REQUIRED';
+        urgencyIndicator.className = 'badge bg-danger';
+    } else if (stageNum <= 4) {
+        urgencyIndicator.textContent = 'HIGH STAKES - SIGNIFICANT IMPACT';
+        urgencyIndicator.className = 'badge bg-warning text-dark';
+    } else {
+        urgencyIndicator.textContent = 'STRATEGIC - LONG-TERM CONSEQUENCES';
+        urgencyIndicator.className = 'badge bg-info';
+    }
+    
     const choicesContainer = document.getElementById('choices-container');
     choicesContainer.innerHTML = '';
     
@@ -93,10 +121,112 @@ function displayStage(stage) {
     
     // Hide evaluation feedback
     document.getElementById('evaluation-feedback').classList.add('d-none');
+    
+    // Start timer if enabled
+    startPhaseTimer();
+    
+    // Trigger interrupt event randomly (30% chance on phases 2-4)
+    if (stageNum >= 2 && stageNum <= 4 && Math.random() < 0.3) {
+        setTimeout(() => showInterruptEvent(stageNum), Math.random() * 15000 + 10000); // 10-25 sec delay
+    }
 }
+
+// Timer functions
+function startPhaseTimer() {
+    // Clear any existing timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    
+    if (timePressureMode === 'none') {
+        document.getElementById('timer-display').classList.add('d-none');
+        return;
+    }
+    
+    // Set time based on pressure level
+    timeRemaining = timePressureMode === 'realistic' ? 180 : 90; // 3 min or 90 sec
+    
+    document.getElementById('timer-display').classList.remove('d-none');
+    updateTimerDisplay();
+    
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            handleTimerExpiry();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('time-remaining').textContent = display;
+    
+    const timerBadge = document.querySelector('.pulse-timer');
+    if (timeRemaining <= 30) {
+        timerBadge.classList.add('timer-critical');
+    } else if (timeRemaining <= 60) {
+        timerBadge.classList.add('timer-warning');
+        timerBadge.classList.remove('timer-critical');
+    }
+}
+
+function handleTimerExpiry() {
+    alert('⏰ TIME EXPIRED! Decision is being made based on current assessment.');
+    // Auto-select neutral choice (middle option)
+    const choices = document.querySelectorAll('.choice-card');
+    if (choices.length > 0) {
+        selectChoice(1); // Select middle choice
+    }
+}
+
+// Interrupt event system
+function showInterruptEvent(stageNum) {
+    const interruptEvents = [
+        {
+            message: 'CEO demanding immediate briefing on media inquiry',
+            context: 'Board meeting in 30 minutes. What do we tell stakeholders?'
+        },
+        {
+            message: 'Hospital CMO: "We\'ve had to cancel 12 surgeries. How long until systems are back?"',
+            context: 'Patient safety is paramount. Operations team needs decision now.'
+        },
+        {
+            message: 'Legal Counsel: "Local news is running a story tonight. We need to coordinate messaging."',
+            context: 'Reputation management requires immediate response strategy.'
+        },
+        {
+            message: 'CFO: "Cyber insurance carrier is on the line. They\'re asking about our response protocols."',
+            context: 'Coverage may be affected by our decisions. They need documentation.'
+        },
+        {
+            message: 'HR Director: "Employees are asking questions. Some are worried about payroll data exposure."',
+            context: 'Internal communication critical. Morale and trust at stake.'
+        }
+    ];
+    
+    const event = interruptEvents[Math.floor(Math.random() * interruptEvents.length)];
+    document.getElementById('interrupt-message').textContent = event.message;
+    document.getElementById('interrupt-context').textContent = event.context;
+    document.getElementById('interrupt-event').classList.remove('d-none');
+}
+
+document.getElementById('dismiss-interrupt').addEventListener('click', () => {
+    document.getElementById('interrupt-event').classList.add('d-none');
+});
 
 // Handle choice selection
 async function selectChoice(choiceIndex) {
+    // Stop timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    
     // Disable all choices
     const choices = document.querySelectorAll('.choice-card');
     choices.forEach(c => c.style.pointerEvents = 'none');
@@ -271,9 +401,34 @@ function displayDebrief(debrief) {
         recsList.appendChild(li);
     });
     
+    // Display discussion prompts for facilitators
+    const promptsList = document.getElementById('prompts-list');
+    promptsList.innerHTML = '';
+    const discussionPrompts = [
+        `Which decision point felt most challenging, and why? How would your organization handle this in real life?`,
+        `Review Stage ${Math.ceil(debrief.timeline.length / 2)}: Could alternative approaches have improved the outcome?`,
+        `What communication channels and stakeholders would need to be activated for this type of incident?`,
+        `Does your organization have the documented procedures needed for each phase of this response?`,
+        `What resources (tools, staff, external partners) would be needed to execute the recommended actions?`,
+        `How would time pressure affect decision-making in a real incident? What can be pre-planned?`,
+        `Which lessons learned should become action items for your incident response plan?`
+    ];
+    
+    discussionPrompts.forEach(prompt => {
+        const li = document.createElement('li');
+        li.className = 'mb-2';
+        li.textContent = prompt;
+        promptsList.appendChild(li);
+    });
+    
     scenarioScreen.classList.add('d-none');
     debriefScreen.classList.remove('d-none');
 }
+
+// Print/Export functionality
+document.getElementById('print-btn').addEventListener('click', () => {
+    window.print();
+});
 
 // Update progress bar
 function updateProgress(current, total) {

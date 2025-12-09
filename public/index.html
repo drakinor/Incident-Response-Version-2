@@ -26,16 +26,48 @@
                     <div class="mb-4">
                         <label for="scenario-type" class="form-label fw-bold">Select Threat Scenario:</label>
                         <select id="scenario-type" class="form-select form-select-lg">
-                            <option value="">🎲 Randomized Threat Vector</option>
-                            <option value="ransomware">🔒 Ransomware Attack</option>
-                            <option value="phishing">🎣 Credential Harvesting (Phishing)</option>
-                            <option value="data breach">💾 Data Exfiltration / Breach</option>
-                            <option value="insider">👤 Insider Threat</option>
-                            <option value="ddos">⚡ DDoS Attack</option>
-                            <option value="bec">💼 Business Email Compromise (BEC)</option>
-                            <option value="malware">🦠 Malware / Spyware Infection</option>
+                            <option value="">🎲 Randomized Threat Vector - System selects threat scenario</option>
+                            <option value="ransomware">🔒 Ransomware Attack - Encryption, extortion, recovery decisions</option>
+                            <option value="phishing">🎣 Credential Harvesting - Email security, human factors, access control</option>
+                            <option value="data breach">💾 Data Exfiltration - Detection, containment, breach notification</option>
+                            <option value="insider">👤 Insider Threat - Access abuse, investigation, personnel response</option>
+                            <option value="ddos">⚡ DDoS Attack - Availability, mitigation, business continuity</option>
+                            <option value="bec">💼 Business Email Compromise - Financial fraud, executive impersonation</option>
+                            <option value="malware">🦠 Malware / Spyware - Detection, forensics, system remediation</option>
                         </select>
-                        <small class="text-muted mt-2 d-block">Each scenario generates unique, realistic incident response challenges across 5 phases</small>
+                        <small class="text-muted mt-2 d-block">Each scenario generates unique, realistic incident response challenges across 5-8 phases</small>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="difficulty-level" class="form-label fw-bold">Difficulty Level:</label>
+                            <select id="difficulty-level" class="form-select">
+                                <option value="standard">Standard - Balanced technical and executive decisions</option>
+                                <option value="executive">Executive Focus - Strategic and communication emphasis</option>
+                                <option value="technical">Technical Focus - Detailed technical response decisions</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="org-context" class="form-label fw-bold">Organization Context:</label>
+                            <select id="org-context" class="form-select">
+                                <option value="education">K-12 School District</option>
+                                <option value="healthcare">Healthcare / Hospital System</option>
+                                <option value="financial">Financial Institution</option>
+                                <option value="manufacturing">Manufacturing / Industrial</option>
+                                <option value="retail">Retail / E-commerce</option>
+                                <option value="government">Government / Public Sector</option>
+                                <option value="technology">Technology Company</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="time-pressure" class="form-label fw-bold">Time Pressure:</label>
+                            <select id="time-pressure" class="form-select">
+                                <option value="none">None - Untimed practice mode</option>
+                                <option value="realistic">Realistic - 2-3 min per phase</option>
+                                <option value="high">High Stress - 90 sec per phase</option>
+                            </select>
+                            <small class="text-muted d-block">Adds countdown timer for crisis simulation</small>
+                        </div>
                     </div>
 
                     <button id="start-btn" class="btn btn-primary btn-lg px-5">INITIATE EXERCISE</button>
@@ -60,7 +92,24 @@
                         <div class="progress mb-3">
                             <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <p class="text-muted">Phase <span id="current-stage">1</span> of <span id="total-stages">5</span> | Score: <span id="current-score" class="badge badge-primary">0</span></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="text-muted mb-0">Phase <span id="current-stage">1</span> of <span id="total-stages">5</span> | Score: <span id="current-score" class="badge badge-primary">0</span></p>
+                            <div id="timer-display" class="d-none">
+                                <span class="badge bg-danger fs-5 pulse-timer">⏰ <span id="time-remaining">--:--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interrupt Event (Stakeholder Pressure) -->
+                <div id="interrupt-event" class="alert alert-danger border-danger d-none mb-4" role="alert">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="alert-heading mb-2">🚨 INCOMING COMMUNICATION</h5>
+                            <p id="interrupt-message" class="mb-2 fw-bold"></p>
+                            <p id="interrupt-context" class="mb-0 small"></p>
+                        </div>
+                        <button id="dismiss-interrupt" class="btn btn-sm btn-outline-danger ms-3">Acknowledge</button>
                     </div>
                 </div>
 
@@ -68,7 +117,10 @@
                 <div id="stage-container">
                     <div class="card shadow-lg mb-4">
                         <div class="card-header bg-warning">
-                            <h4 id="stage-title" class="mb-0 text-uppercase"></h4>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 id="stage-title" class="mb-0 text-uppercase"></h4>
+                                <span id="urgency-indicator" class="badge bg-dark"></span>
+                            </div>
                         </div>
                         <div class="card-body">
                             <p id="stage-narrative" class="fs-5"></p>
@@ -120,13 +172,27 @@
                         <h5 class="mt-4 text-uppercase fw-bold">Your Response Actions:</h5>
                         <ul id="actions-list" class="list-group mb-4"></ul>
 
+
                         <h5 class="mt-4 text-uppercase fw-bold">Key Lessons Learned:</h5>
                         <ul id="lessons-list" class="list-group mb-4"></ul>
 
                         <h5 class="mt-4 text-uppercase fw-bold">Strategic Recommendations:</h5>
                         <ul id="recommendations-list" class="list-group mb-4"></ul>
 
-                        <button id="restart-btn" class="btn btn-primary btn-lg px-5">INITIATE NEW EXERCISE</button>
+                        <h5 class="mt-4 text-uppercase fw-bold">Facilitator Discussion Prompts:</h5>
+                        <div id="discussion-prompts" class="card bg-light mb-4">
+                            <div class="card-body">
+                                <p class="mb-2"><strong>For team debriefing, consider discussing:</strong></p>
+                                <ul id="prompts-list" class="mb-0">
+                                    <!-- Prompts will be dynamically inserted -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 mb-3">
+                            <button id="restart-btn" class="btn btn-primary btn-lg px-5">INITIATE NEW EXERCISE</button>
+                            <button id="print-btn" class="btn btn-outline-primary btn-lg px-5">📄 EXPORT / PRINT REPORT</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -136,3 +202,4 @@
     <script src="/app.js"></script>
 </body>
 </html>
+
