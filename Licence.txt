@@ -1,0 +1,25 @@
+PROPRIETARY LICENSE AGREEMENT
+
+Incident Response Tabletop Simulator
+Copyright (c) 2025 drakinor
+All rights reserved.
+
+Permission is granted to view, read, and clone the source code of this project for personal evaluation and noncommercial educational purposes only.
+
+Any of the following actions are prohibited without prior written consent from drakinor:
+
+Copying or redistributing this software or any derivative works
+
+Modifying, adapting, merging, or creating derivative works
+
+Selling, sublicensing, leasing, or commercializing this software in any form
+
+Using this software in a paid service, SaaS offering, consulting engagement, or training product
+
+Using this software within any business, organization, government entity, or institution without a purchased commercial license
+
+Removing or altering any proprietary notices
+
+Using this software in any externally distributed security tool, platform, or curriculum
+
+This software is provided without warranty of any kind. No liability is assumed for any damages, losses, or claims arising from the use of this software.
