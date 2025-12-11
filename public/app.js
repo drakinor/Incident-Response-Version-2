@@ -438,6 +438,11 @@ function displayDebrief(debrief) {
         recsList.appendChild(li);
     });
     
+    // Display compliance analysis if available
+    if (debrief.complianceAnalysis) {
+        displayComplianceAnalysis(debrief.complianceAnalysis);
+    }
+    
     // Display discussion prompts for facilitators
     const promptsList = document.getElementById('prompts-list');
     promptsList.innerHTML = '';
@@ -485,3 +490,95 @@ document.getElementById('restart-btn').addEventListener('click', () => {
     
     document.getElementById('scenario-prompt').value = '';
 });
+
+// Display compliance analysis
+function displayComplianceAnalysis(complianceAnalysis) {
+    // Set risk level with color coding
+    const riskElement = document.getElementById('compliance-risk-level');
+    const riskBadge = document.getElementById('compliance-risk-badge');
+    riskElement.textContent = complianceAnalysis.riskLevel;
+    
+    // Color code risk levels with subtle styling
+    const riskStyles = {
+        'Low': { color: '#198754', bg: '#d1e7dd' },
+        'Medium': { color: '#fd7e14', bg: '#fff3cd' },
+        'High': { color: '#dc3545', bg: '#f8d7da' },
+        'Critical': { color: '#ffffff', bg: '#dc3545' }
+    };
+    
+    const style = riskStyles[complianceAnalysis.riskLevel] || { color: '#6c757d', bg: '#e9ecef' };
+    riskBadge.style.backgroundColor = style.bg;
+    riskBadge.style.color = style.color;
+    riskBadge.style.border = `1px solid ${style.color}30`;
+    
+    // Display compliance requirements with cleaner styling
+    const requirementsContainer = document.getElementById('compliance-requirements');
+    requirementsContainer.innerHTML = '';
+    
+    complianceAnalysis.requirements.forEach(req => {
+        if (req.triggered) {
+            const reqDiv = document.createElement('div');
+            reqDiv.className = 'alert alert-light border-start border-warning border-3 mb-3 py-3';
+            reqDiv.style.borderLeftWidth = '4px';
+            
+            let additionalInfo = '';
+            if (req.timeframe || req.penalties) {
+                additionalInfo = '<div class="row mt-3">';
+                if (req.timeframe) {
+                    additionalInfo += `<div class="col-md-6"><small class="text-muted"><strong>Timeframe:</strong> ${req.timeframe}</small></div>`;
+                }
+                if (req.penalties) {
+                    additionalInfo += `<div class="col-md-6"><small class="text-muted"><strong>Penalties:</strong> ${req.penalties}</small></div>`;
+                }
+                additionalInfo += '</div>';
+            }
+            
+            reqDiv.innerHTML = `
+                <div class="d-flex align-items-start">
+                    <div class="me-3 mt-1">
+                        <span class="badge bg-warning text-dark rounded-circle" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">⚠</span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="alert-heading mb-2">${req.name}</h6>
+                        <p class="mb-2">${req.description}</p>
+                        ${additionalInfo}
+                        <details class="mt-3">
+                            <summary class="btn btn-link p-0 text-decoration-none small">View Details</summary>
+                            <ul class="mt-2 mb-0 small text-muted">
+                                ${req.details.map(detail => `<li class="mb-1">${detail}</li>`).join('')}
+                            </ul>
+                        </details>
+                    </div>
+                </div>
+            `;
+            
+            requirementsContainer.appendChild(reqDiv);
+        }
+    });
+    
+    // Display compliance recommendations with icons
+    const complianceRecsList = document.getElementById('compliance-recommendations-list');
+    complianceRecsList.innerHTML = '';
+    complianceAnalysis.recommendations.forEach(rec => {
+        const li = document.createElement('li');
+        li.className = 'mb-2 d-flex align-items-start';
+        li.innerHTML = `
+            <span class="me-2 mt-1 text-primary">•</span>
+            <span class="small">${rec}</span>
+        `;
+        complianceRecsList.appendChild(li);
+    });
+    
+    // Display ethical considerations with icons
+    const ethicalList = document.getElementById('ethical-considerations-list');
+    ethicalList.innerHTML = '';
+    complianceAnalysis.ethicalConsiderations.forEach(consideration => {
+        const li = document.createElement('li');
+        li.className = 'mb-2 d-flex align-items-start';
+        li.innerHTML = `
+            <span class="me-2 mt-1 text-info">•</span>
+            <span class="small">${consideration}</span>
+        `;
+        ethicalList.appendChild(li);
+    });
+}

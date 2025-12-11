@@ -1,33 +1,35 @@
-# Incident Response Tabletop Simulator
+# Law Firm Incident Response Tabletop Simulator
+**Douglas G. Jackson, P.A. - Cybersecurity Training Platform**
 
-**Build organizational resilience through realistic crisis decision training.**
+**Build legal practice resilience through realistic crisis decision training.**
 
-## Business Value
+## Law Firm-Specific Value
 
-Cyber incidents are inevitable. When they happen, your leadership team's decisions in the first hours determine:
-- **Financial impact**: Millions in recovery costs, ransom demands, regulatory fines
-- **Operational continuity**: Days or weeks of disruption to core business
-- **Legal exposure**: Breach notifications, compliance violations, litigation
-- **Reputation damage**: Loss of stakeholder trust, media scrutiny, board accountability
+Cyber incidents targeting law firms are increasing. When they happen, your response decisions in the first hours determine:
+- **Financial impact**: Recovery costs, ransom demands, regulatory fines, malpractice claims
+- **Client confidentiality**: Potential breaches of attorney-client privilege and confidential information
+- **Legal exposure**: FIPA compliance violations, ethical rule violations, client notification obligations
+- **Reputation damage**: Loss of client trust, bar discipline, professional standing
 
-This simulator prepares your executive and incident response teams to make **fast, informed decisions under pressure** before a real crisis tests them.
+This simulator prepares your law firm team to make **fast, informed decisions under pressure** while maintaining ethical obligations and regulatory compliance.
 
-### What It Does
+### What It Does for Law Firms
 
-✓ **Realistic Crisis Scenarios**: 7 common cyber incidents (ransomware, phishing, data breach, insider threat, DDoS, BEC, malware)  
-✓ **Executive-Level Decision Points**: Focus on business impact, legal risk, and stakeholder management—not technical minutiae  
-✓ **Time Pressure Simulation**: Optional countdown timers and stakeholder interrupts mirror real incident stress  
-✓ **Multi-Role Team Training**: Assign roles (Incident Commander, Legal, Communications, CFO, etc.) for realistic coordination  
-✓ **Performance Analytics**: Letter-graded debrief with timeline analysis and improvement recommendations  
+✓ **Legal Practice Crisis Scenarios**: 7 law firm-relevant cyber incidents (client file ransomware, credential harvesting, data breach, insider threat, DDoS during filing deadlines, email compromise, malware)  
+✓ **Law Firm Decision Points**: Focus on client confidentiality, ethical duties, regulatory compliance, and trust account protection  
+✓ **Attorney Ethics Integration**: Built-in analysis of Florida Rules of Professional Conduct Rule 4-1.6 and client notification obligations  
+✓ **Regulatory Compliance**: FIPA, HIPAA (for PI cases), and ethical rule compliance analysis in every debrief  
+✓ **Law Firm Role Training**: Managing Partner, Office Manager, Legal Counsel, Trust Account Manager, etc.  
+✓ **Performance Analytics**: Letter-graded debrief with legal compliance analysis and improvement recommendations  
 ✓ **Zero IT Burden**: One-click launcher, runs locally, no APIs or external dependencies
 
-### Why It Matters
+### Why It Matters for Law Firms
 
-**Incident preparedness is not optional.** Insurance carriers, regulators, and boards increasingly expect documented tabletop exercises. This tool provides:
-- **Quarterly training compliance** with minimal staff time investment
-- **Evidence of due diligence** for cyber insurance and audits
-- **Team readiness validation** before incidents expose gaps
-- **Cross-functional coordination** practice between IT, Legal, Finance, and Communications
+**Incident preparedness protects client confidentiality and practice integrity.** The Florida Bar and ABA increasingly expect reasonable cybersecurity measures. This tool provides:
+- **Quarterly compliance training** with minimal staff time investment
+- **Evidence of reasonable care** for malpractice defense and ethical compliance
+- **Team readiness validation** before incidents expose gaps in client data protection
+- **Cross-functional coordination** between partners, staff, IT, and external counsel
 - **Cost-effective solution** compared to consultant-led exercises ($5K-15K each)
 
 ## 🚀 Getting Started

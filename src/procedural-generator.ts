@@ -1,4 +1,5 @@
 // Procedural scenario generator - no LLM needed!
+import { analyzeLawFirmCompliance, ComplianceAnalysis } from './law-firm-compliance';
 
 export interface Choice {
   text: string;
@@ -52,108 +53,109 @@ export interface Debrief {
   }>;
   keyLessons: string[];
   recommendations: string[];
+  complianceAnalysis?: ComplianceAnalysis;
 }
 
 // Scenario templates
 const INCIDENT_TYPES = {
   ransomware: {
-    title: 'Enterprise Ransomware Attack',
-    description: 'Advanced persistent threat group has deployed ransomware across critical infrastructure.',
-    context: 'District-wide security incident affecting 15,000 students and 2,000 staff members. Monday, 06:30 hours.',
+    title: 'Law Firm Ransomware Attack',
+    description: 'Advanced persistent threat group has deployed ransomware targeting client files and case management systems.',
+    context: 'Firm-wide security incident affecting all client case files and trust account access. Critical court filing deadlines at risk.',
     initialIndicators: [
-      'Multiple servers encrypted - file systems compromised',
-      'Ransom demand: $500,000 Bitcoin within 72 hours',
-      'Student Information System offline - no data access',
-      'Email infrastructure unavailable'
+      'Client case management server encrypted - all files inaccessible',
+      'Ransom demand: $750,000 Bitcoin within 48 hours',
+      'Trust accounting system offline - no financial access',
+      'Email infrastructure compromised - client communications blocked'
     ]
   },
   phishing: {
-    title: 'Targeted Credential Harvesting Campaign',
-    description: 'Sophisticated phishing operation targeting organizational credentials and sensitive access.',
-    context: 'Security operations center has detected coordinated phishing attempts. Multiple authentication compromises confirmed.',
+    title: 'Legal Practice Credential Harvesting',
+    description: 'Sophisticated phishing operation targeting attorney credentials and client confidential access.',
+    context: 'Security monitoring detected coordinated phishing targeting law firm personnel with courthouse-themed emails.',
     initialIndicators: [
-      'HR escalation: 12+ reports of suspicious communications',
-      'Credential harvesting confirmed - 8 successful compromises',
-      'Anomalous authentication attempts from hostile nation-state IPs',
-      'Active account takeover attempts in progress'
+      'Office manager reports: 8+ attorneys received fake court notices',
+      'Credential harvesting confirmed - 3 successful attorney account compromises',
+      'Anomalous authentication attempts from foreign IP addresses',
+      'Active client portal access attempts using stolen credentials'
     ]
   },
   dataBreach: {
-    title: 'Unauthorized Data Exfiltration',
-    description: 'Unauthorized access to protected student records and personally identifiable information detected.',
-    context: 'Enterprise database containing FERPA-protected records, SSNs, and medical data shows signs of compromise.',
+    title: 'Client Information Data Breach',
+    description: 'Unauthorized access to confidential client files containing privileged communications and personal data.',
+    context: 'Document management system containing attorney-client privileged files and personal injury case records compromised.',
     initialIndicators: [
-      'Database audit logs: unauthorized query patterns detected',
-      'Mass data export executed at 02:00 hours - 50GB transferred',
-      'Access origin: international IP address with no business justification',
-      'Protected student records database integrity compromised'
+      'Document server audit logs: unauthorized bulk file access detected',
+      'Mass download executed at 02:30 hours - 75GB of client files transferred',
+      'Access origin: suspicious international IP with no business relationship',
+      'Confidential client database including SSNs and medical records accessed'
     ]
   },
   insider: {
-    title: 'Insider Threat - Privilege Abuse',
-    description: 'Former privileged user attempting unauthorized access to critical systems post-termination.',
-    context: 'Recently separated system administrator exhibiting suspicious activity patterns suggesting retained access.',
+    title: 'Attorney Insider Threat',
+    description: 'Former associate attorney attempting unauthorized access to current client files and confidential case materials.',
+    context: 'Recently departed associate who joined competing firm exhibiting suspicious activity patterns suggesting unauthorized data access.',
     initialIndicators: [
-      'Terminated employee credentials still active - deprovisioning failure',
-      'After-hours system access from unusual location',
-      'Privilege escalation attempts flagged by security monitoring',
-      'Sensitive files copied to unauthorized external storage'
+      'Former associate credentials still active - HR deprovisioning oversight',
+      'Weekend case file access from competitor law firm IP address',
+      'Client contact database downloaded prior to departure',
+      'Confidential merger documents copied to personal cloud storage'
     ]
   },
   ddos: {
-    title: 'Distributed Denial of Service Attack',
-    description: 'Large-scale DDoS attack disrupting public-facing services during critical enrollment period.',
-    context: 'Mission-critical enrollment window. Online services experiencing complete service degradation.',
+    title: 'Law Firm DDoS Attack',
+    description: 'Large-scale DDoS attack targeting firm website during critical court filing deadline.',
+    context: 'Mission-critical filing deadline approaching. Client portal and e-filing services experiencing complete degradation.',
     initialIndicators: [
-      'Website performance degraded to inoperability',
-      'Traffic analysis: 10Gbps+ volumetric attack from botnet',
-      'Legitimate user access completely blocked',
-      'Enrollment deadline: T-minus 6 hours'
+      'Firm website and client portal completely inaccessible',
+      'Traffic analysis: 15Gbps+ volumetric attack from distributed botnet',
+      'Electronic court filing system access blocked for all attorneys',
+      'Critical motion filing deadline: T-minus 4 hours'
     ]
   },
   bec: {
-    title: 'Business Email Compromise (BEC)',
-    description: 'Sophisticated email fraud targeting financial transactions and wire transfers.',
-    context: 'Finance department flagged suspicious wire transfer requests. Attackers impersonating executives.',
+    title: 'Legal Practice Email Compromise',
+    description: 'Sophisticated email fraud targeting client payment instructions and trust account transfers.',
+    context: 'Trust account administrator flagged suspicious transfer requests. Attackers impersonating senior partners.',
     initialIndicators: [
-      'CFO received fraudulent wire transfer request appearing to come from Superintendent',
-      'Email header analysis reveals external origin with display name spoofing',
-      'Three wire transfer requests totaling $487,000 pending approval',
-      'Similar phishing attempts detected targeting accounts payable staff'
+      'Managing partner email compromised - fraudulent client payment instructions sent',
+      'Email header analysis reveals external origin with partner display name spoofing',
+      'Two trust account wire transfer requests totaling $325,000 pending',
+      'Similar phishing attempts targeting paralegals and accounting staff detected'
     ]
   },
   malware: {
-    title: 'Malware / Spyware Infection',
-    description: 'Advanced malware deployment with potential data exfiltration and system compromise.',
-    context: 'Endpoint detection systems flagged suspicious process behavior. Unknown binary executing across systems.',
+    title: 'Law Firm Malware Infection',
+    description: 'Advanced malware deployment targeting client data with credential harvesting and system compromise.',
+    context: 'Endpoint detection flagged suspicious activity on attorney workstations. Unknown binary executing across case management systems.',
     initialIndicators: [
-      'EDR alerts: unknown malware detected on 23 endpoints',
+      'EDR alerts: unknown malware detected on 15 attorney workstations',
       'Network traffic analysis shows data exfiltration to command-and-control servers',
-      'Keylogger functionality detected - credential theft suspected',
-      'Lateral movement indicators - malware spreading via shared drives'
+      'Keylogger functionality detected - client portal credentials compromised',
+      'Lateral movement indicators - malware spreading via shared case files'
     ]
   }
 };
 
-// Incident Response roles by priority
+// Incident Response roles by priority for Law Firm
 const IR_ROLES: TeamRole[] = [
-  { title: 'Incident Commander', priority: 1, description: 'Overall incident coordination and strategic decisions' },
-  { title: 'Technical Lead', priority: 2, description: 'Technical analysis and system remediation' },
-  { title: 'Communications Officer', priority: 3, description: 'Stakeholder communications and public relations' },
-  { title: 'Legal Counsel', priority: 4, description: 'Legal compliance and regulatory requirements' },
-  { title: 'Security Analyst', priority: 5, description: 'Threat intelligence and forensic analysis' },
-  { title: 'CFO / Financial Officer', priority: 6, description: 'Financial impact and resource allocation' },
-  { title: 'Operations Manager', priority: 7, description: 'Business continuity and operational impact' },
-  { title: 'HR Director', priority: 8, description: 'Personnel matters and insider threat response' }
+  { title: 'Managing Partner', priority: 1, description: 'Overall incident coordination, firm leadership, and strategic decisions' },
+  { title: 'Senior Partner', priority: 2, description: 'Client relations, risk assessment, and regulatory compliance oversight' },
+  { title: 'Office Administrator', priority: 3, description: 'Operational coordination, vendor management, and staff communications' },
+  { title: 'IT Coordinator', priority: 4, description: 'Technical assessment, system isolation, and forensic evidence preservation' },
+  { title: 'Trust Account Administrator', priority: 5, description: 'Financial security, trust account protection, and audit compliance' },
+  { title: 'Senior Associate', priority: 6, description: 'Case impact assessment and client communication support' },
+  { title: 'Office Manager', priority: 7, description: 'Staff coordination, document security, and operational continuity' },
+  { title: 'Paralegal Supervisor', priority: 8, description: 'Case file integrity, document preservation, and support staff coordination' }
 ];
 
-// Map stage types to appropriate decision-making roles
+// Map stage types to appropriate decision-making roles for Law Firm
 const STAGE_DECISION_MAKERS = {
-  detection: 'Technical Lead',
-  containment: 'Incident Commander',
-  eradication: 'Security Analyst',
-  recovery: 'Operations Manager',
-  postIncident: 'Incident Commander'
+  detection: 'IT Coordinator',
+  containment: 'Managing Partner',
+  eradication: 'Senior Partner',
+  recovery: 'Office Administrator',
+  postIncident: 'Managing Partner'
 };
 
 // Stage templates for different phases of IR
@@ -161,91 +163,91 @@ const STAGE_TEMPLATES = {
   detection: {
     title: 'Detection & Initial Assessment',
     goodActions: [
-      'Activate incident response protocol - assemble cross-functional IR team immediately',
-      'Implement evidence preservation procedures - capture logs, memory dumps, and forensic artifacts',
-      'Execute controlled isolation of affected systems while maintaining forensic integrity'
+      'Immediately convene senior partners and authorize engagement of cybersecurity incident response firm',
+      'Direct IT coordinator to preserve all evidence while coordinating with external forensics experts',
+      'Authorize emergency budget allocation for incident response and engage cyber insurance carrier'
     ],
     neutralActions: [
-      'Continue monitoring for additional data points before escalation',
-      'Email IT department requesting investigation without formal escalation',
-      'Perform system restart to determine if issue self-resolves'
+      'Request detailed IT assessment report before escalating to senior partners',
+      'Contact regular IT support vendor for initial evaluation and guidance',
+      'Schedule emergency partner meeting within 24 hours to discuss response strategy'
     ],
     badActions: [
-      'Dismiss alerts as false positive - continue normal operations',
-      'Delete suspicious artifacts to clear disk space',
-      'Defer response until standard business hours'
+      'Instruct IT to handle internally without partner notification or external expertise',
+      'Delay response until normal business hours to avoid weekend overtime costs',
+      'Direct staff to continue working normally until incident scope is fully understood'
     ]
   },
   containment: {
     title: 'Containment & Threat Isolation',
     goodActions: [
-      'Implement network segmentation to isolate compromised systems while preserving business continuity',
-      'Execute credential rotation across all administrative accounts - enforce MFA enterprise-wide',
-      'Coordinate with legal counsel and communications team on stakeholder notification strategy'
+      'Authorize immediate isolation of affected systems while directing IT to maintain critical court filing access',
+      'Direct firm administrator to coordinate password resets with external IT security firm',
+      'Convene senior partners to develop client notification strategy and assess ethical obligations'
     ],
     neutralActions: [
-      'Execute complete network shutdown as precautionary measure',
-      'Reset credentials for identified compromised accounts only',
-      'Issue generic "technical difficulties" statement to stakeholders'
+      'Request IT to shut down all systems as precautionary measure until Monday morning',
+      'Authorize password resets only for accounts showing suspicious activity',
+      'Prepare generic client communication about temporary technical difficulties'
     ],
     badActions: [
-      'Maintain normal operations to avoid service disruption',
-      'Authorize ransom payment for immediate service restoration',
-      'Suppress incident details from executive leadership'
+      'Direct staff to continue normal operations to avoid disrupting client deadlines',
+      'Approve ransom payment authorization to restore case files immediately',
+      'Instruct staff not to discuss incident details with anyone including other partners'
     ]
   },
   eradication: {
-    title: 'Eradication & Root Cause Analysis',
+    title: 'Investigation & Root Cause Analysis',
     goodActions: [
-      'Conduct comprehensive forensic analysis - identify attack vectors, scope, and threat actor TTPs',
-      'Eliminate threat actor persistence mechanisms and remediate identified vulnerabilities',
-      'Develop evidence-based recovery strategy with input from all stakeholder groups'
+      'Engage cybersecurity forensics firm under attorney-client privilege with senior partner oversight',
+      'Direct external experts to eliminate threats while ensuring privileged communications remain protected',
+      'Authorize comprehensive security assessment with managing partner approval and client impact review'
     ],
     neutralActions: [
-      'Restore from backup without conducting root cause analysis',
-      'Deploy security patches while bypassing forensic investigation',
-      'Prioritize rapid service restoration over thorough remediation'
+      'Request IT vendor to restore from backups without detailed forensic investigation',
+      'Authorize basic security updates while limiting investigation scope to control costs',
+      'Focus on rapid case file restoration over comprehensive threat elimination'
     ],
     badActions: [
-      'Restore systems immediately without removing attacker foothold',
-      'Eliminate forensic analysis to reduce incident costs',
-      'Attribute responsibility to third-party vendors without corrective action'
+      'Direct immediate system restoration without removing attacker access or investigating scope',
+      'Decline forensic investigation to minimize legal exposure and costs',
+      'Blame IT vendor for incident without addressing firm security policies or training'
     ]
   },
   recovery: {
     title: 'Recovery & Service Restoration',
     goodActions: [
-      'Execute phased restoration with validation checkpoints at each stage',
-      'Deploy enhanced monitoring, detection, and response capabilities',
-      'Maintain continuous coordination with stakeholders throughout restoration process'
+      'Authorize phased restoration plan with external security firm validation at each stage',
+      'Direct enhanced security implementation with ongoing monitoring and staff training program',
+      'Approve comprehensive insurance claim documentation and regulatory compliance reporting'
     ],
     neutralActions: [
-      'Restore all systems simultaneously to minimize downtime',
-      'Resume normal operations without implementing additional safeguards',
-      'Initiate services before completing comprehensive security validation'
+      'Request immediate full restoration to resume normal client service operations',
+      'Approve basic security improvements recommended by IT vendor',
+      'Authorize standard client notifications without detailed incident explanation'
     ],
     badActions: [
-      'Restore from potentially compromised backups without integrity verification',
-      'Bypass testing protocols for restored infrastructure',
-      'Declare full operational capability while critical vulnerabilities remain unaddressed'
+      'Direct immediate return to normal operations without security improvements',
+      'Refuse additional security investments to minimize incident costs',
+      'Prohibit any incident disclosure to protect firm reputation'
     ]
   },
   postIncident: {
-    title: 'Post-Incident Analysis & Enhancement',
+    title: 'Post-Incident Review & Lessons Learned',
     goodActions: [
-      'Facilitate comprehensive after-action review with all stakeholder groups',
-      'Update incident response procedures based on lessons learned',
-      'Implement preventive controls addressing identified root causes and systemic weaknesses'
+      'Commission comprehensive security assessment and staff training program with ongoing monitoring',
+      'Establish formal incident response policy with clear partner roles and external vendor relationships',
+      'Authorize investment in enhanced cybersecurity measures and regular compliance auditing'
     ],
     neutralActions: [
-      'Distribute incident summary via email to IT staff',
-      'Schedule security posture review for future date TBD',
-      'Implement tactical improvements while deferring strategic lessons learned'
+      'Request basic security policy updates and annual staff training implementation',
+      'Consider cyber security insurance policy review and vendor relationship evaluation',
+      'Schedule quarterly partner meetings to review security posture and incident preparedness'
     ],
     badActions: [
-      'Close incident without formal documentation or review',
-      'Avoid documentation to minimize organizational liability',
-      'Focus on individual accountability rather than systemic improvement'
+      'Resume normal operations without policy changes or additional security investments',
+      'Attribute incident to unforeseeable circumstances requiring no preventive measures',
+      'Focus on individual accountability rather than systematic firm security improvement'
     ]
   }
 };
@@ -253,37 +255,37 @@ const STAGE_TEMPLATES = {
 // Consequence templates based on choice quality
 const CONSEQUENCES = {
   good: [
-    'Decisive action has effectively limited incident scope. Team demonstrates strong situational awareness.',
-    'Executive leadership acknowledges transparent communication. Stakeholder confidence maintained.',
-    'Evidence preservation protocols properly executed. Forensic analysis and legal proceedings supported.',
-    'Systematic approach yielding comprehensive visibility into incident parameters and threat landscape.',
-    'Proactive measures successfully prevented lateral movement. Incident contained within acceptable parameters.'
+    'Swift action has effectively limited incident scope. Senior partners demonstrate strong crisis leadership.',
+    'Managing partner acknowledges transparent client communication. Client confidence maintained.',
+    'Evidence preservation protocols properly executed. Attorney-client privilege protected during investigation.',
+    'Systematic approach yielding comprehensive visibility into incident scope and client data exposure.',
+    'Proactive measures successfully prevented further client file compromise. Incident contained within firm boundaries.'
   ],
   neutral: [
-    'Situation partially stabilized. Several critical gaps require immediate attention.',
-    'Approach demonstrates reasonable judgment but overlooks key strategic considerations.',
-    'Team managing incident within acceptable parameters. Enhanced coordination recommended.',
-    'Progress documented. Alternative approaches may have yielded superior outcomes.',
-    'Stakeholder groups requesting clarification on response strategy and decision rationale.'
+    'Situation partially stabilized. Several critical client notification gaps require immediate senior partner attention.',
+    'Response demonstrates reasonable judgment but overlooks key ethical and regulatory considerations.',
+    'Team managing incident within acceptable parameters. Enhanced senior partner coordination recommended.',
+    'Progress documented. Alternative approaches may have better protected client confidentiality.',
+    'Senior partners and key clients requesting clarification on response strategy and firm security posture.'
   ],
   bad: [
-    'Incident scope expanding. Additional infrastructure now compromised. Threat actor demonstrating persistence.',
-    'Critical forensic evidence destroyed or contaminated. Investigation significantly impaired.',
-    'Stakeholder confusion and concern escalating. Communication breakdown evident.',
-    'Threat actor exploiting response delays to establish additional footholds.',
-    'Legal and compliance teams identifying potential regulatory violations and liability exposure.',
-    'Recovery timeline extended 48-72 hours. Business impact assessment being revised upward.'
+    'Incident scope expanding. Additional client files now compromised. Threat actor demonstrating persistence.',
+    'Critical forensic evidence destroyed or contaminated. Privilege protection and investigation significantly impaired.',
+    'Senior partner and client confusion escalating. Communication breakdown threatening firm reputation.',
+    'Threat actor exploiting response delays to access additional confidential case files.',
+    'Potential ethical violations and regulatory non-compliance exposure requiring immediate bar notification review.',
+    'Case file recovery timeline extended 48-72 hours. Critical court filing deadlines now at risk.'
   ]
 };
 
 // Feedback templates
 const FEEDBACK = {
   good: [
-    'Exemplary decision-making. Aligns with NIST incident response framework best practices.',
-    'Strategic choice demonstrating mature security operations mindset. Business continuity preserved.',
-    'Professional response. This approach reflects enterprise-grade security thinking.',
-    'Sound tactical decision considering both immediate containment and long-term organizational impact.',
-    'Excellent judgment. Optimal balance between urgency and methodical execution.'
+    'Exemplary decision-making. Aligns with law firm incident response best practices and ethical obligations.',
+    'Strategic choice demonstrating mature law firm security mindset. Client confidentiality preserved.',
+    'Professional response. This approach reflects sophisticated legal practice security thinking.',
+    'Sound tactical decision considering both immediate client protection and long-term firm reputation.',
+    'Excellent judgment. Optimal balance between crisis urgency and careful attorney ethical compliance.'
   ],
   neutral: [
     'Acceptable response within operational constraints. More optimal alternatives exist.',
@@ -533,18 +535,18 @@ export async function generateDebrief(
   
   // Generate relevant lessons learned
   const allLessons = [
-    'Rapid detection and immediate response activation directly correlate with reduced organizational impact',
-    'Forensic evidence preservation is mission-critical for investigation, attribution, and legal proceedings',
-    'Stakeholder communication requires coordinated strategy with legal counsel and executive leadership',
-    'Network segmentation architecture limits threat actor lateral movement and reduces blast radius',
-    'Validated backup procedures and tested recovery capabilities are fundamental resilience requirements',
-    'Incident response playbooks must be documented, exercised regularly, and continuously improved',
-    'Multi-factor authentication implementation significantly reduces credential-based attack surface',
-    'Security awareness programs reduce human vulnerability to social engineering and phishing campaigns',
-    'Ransom payment funds criminal enterprises and provides no guarantee of data recovery or decryption',
-    'After-action reviews transform incident response into organizational learning and capability enhancement',
-    'Legal and compliance integration early in incident lifecycle prevents regulatory exposure',
-    'Root cause analysis through forensics prevents incident recurrence and identifies systemic weaknesses'
+    'Immediate senior partner engagement and external cybersecurity firm authorization are critical for effective response',
+    'Attorney-client privilege protection requires careful vendor selection and oversight during incident investigations',
+    'Client communication strategy must balance transparency obligations with ongoing investigation confidentiality',
+    'Pre-established relationships with cybersecurity vendors reduce critical response delays during incidents',
+    'Cyber insurance activation and documentation requirements should be incorporated into incident response planning',
+    'Partner-level incident response policies must be documented, practiced regularly, and continuously updated',
+    'Multi-factor authentication and staff training significantly reduce law firm vulnerability to credential attacks',
+    'Security awareness programs tailored to legal profession reduce phishing and social engineering success rates',
+    'Ransom payments create legal and ethical complications while providing no guarantee of client data recovery',
+    'Post-incident security investments demonstrate reasonable care and may reduce malpractice liability exposure',
+    'Regulatory compliance and ethical obligations must be integrated throughout the incident response lifecycle',
+    'Comprehensive forensic analysis under privilege protection prevents recurrence and supports legal defense strategies'
   ];
   
   // Select 3-5 relevant lessons
@@ -557,18 +559,18 @@ export async function generateDebrief(
   
   // Generate actionable recommendations
   const allRecommendations = [
-    'Institute quarterly tabletop exercises simulating various threat scenarios and testing IR procedures',
-    'Conduct comprehensive IR plan review - update procedures based on exercise findings and gaps identified',
-    'Deploy enhanced monitoring, detection, and response (MDR) capabilities across critical infrastructure',
-    'Execute organization-wide security awareness training focusing on phishing, social engineering, and threat recognition',
-    'Establish formal escalation matrix with 24/7 contact procedures for IR team activation',
-    'Validate backup integrity and recovery procedures - conduct restoration testing quarterly',
-    'Document clear roles, responsibilities, and decision authority for all incident response personnel',
-    'Implement endpoint detection and response (EDR) platform for real-time threat visibility',
-    'Establish pre-incident relationships with external forensics firms, legal counsel, and cyber insurance carriers',
-    'Architect network segmentation following zero-trust principles to limit adversary movement',
-    'Develop communication playbooks for stakeholder groups: executives, board, employees, customers, regulators',
-    'Commission third-party security architecture assessment focusing on defense-in-depth strategy'
+    'Institute quarterly tabletop exercises with senior partners to test incident response decision-making',
+    'Establish formal incident response policy with clear partner roles and external vendor pre-authorization',
+    'Engage cybersecurity firm for ongoing monitoring and rapid incident response capabilities',
+    'Implement firm-wide security awareness training focusing on legal profession-specific threat vectors',
+    'Create emergency escalation procedures with 24/7 senior partner notification and vendor activation',
+    'Validate backup systems and establish tested recovery procedures for critical case management systems',
+    'Document clear decision authority and communication protocols for all incident response scenarios',
+    'Establish pre-incident relationships with cybersecurity forensics firms operating under attorney-client privilege',
+    'Review and enhance cyber insurance coverage with specific attention to legal profession exposures',
+    'Develop client communication templates for various incident scenarios with regulatory compliance review',
+    'Commission comprehensive security assessment by qualified cybersecurity firm with legal industry experience',
+    'Establish formal security governance with senior partner oversight and regular compliance auditing'
   ];
   
   const numRecs = 3 + Math.floor(Math.random() * 3);
@@ -592,6 +594,11 @@ export async function generateDebrief(
     };
   });
   
+  // Generate Law Firm compliance analysis
+  const incidentType = scenario.title.toLowerCase();
+  const allChoices = history.map(item => item.choice);
+  const complianceAnalysis = analyzeLawFirmCompliance(incidentType, scenario, allChoices);
+
   return {
     finalScore,
     maxScore,
@@ -602,6 +609,7 @@ export async function generateDebrief(
     actionsSummary,
     timeline,
     keyLessons,
-    recommendations
+    recommendations,
+    complianceAnalysis
   };
 }
